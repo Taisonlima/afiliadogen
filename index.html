@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AfiliadoGen - Gerador de Posts</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #e74c3c;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #e74c3c;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #c0392b;
+    }
+    .result {
+      margin-top: 30px;
+      padding: 20px;
+      border: 1px dashed #ccc;
+      border-radius: 8px;
+      background: #f9f9f9;
+      display: none;
+    }
+    .platform {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: #fff;
+      border-left: 4px solid #e74c3c;
+      border-radius: 6px;
+    }
+    .image-container {
+      text-align: center;
+      margin: 20px 0;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+    .copy-btn {
+      background: #3498db;
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    .copy-btn:hover {
+      background: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎯 AfiliadoGen</h1>
+    <p>Coloque seu link de afiliado e gere posts prontos para Instagram, WhatsApp e Telegram!</p>
+
+    <div class="form-group">
+      <label for="link">Link de Afiliado:</label>
+      <input type="text" id="link" placeholder="https://shopee.com.br/..." required />
+    </div>
+    <button onclick="generatePost()">Gerar Post</button>
+
+    <div id="result" class="result">
+      <div class="image-container">
+        <img id="product-image" src="" alt="Imagem do produto" style="display:none;" />
+      </div>
+
+      <div class="platform">
+        <h3>📸 Instagram</h3>
+        <pre id="instagram-post"></pre>
+        <button class="copy-btn" onclick="copyToClipboard('instagram-post')">Copiar</button>
+      </div>
+
+      <div class="platform">
+        <h3>📱 WhatsApp</h3>
+        <pre id="whatsapp-post"></pre>
+        <button class="copy-btn" onclick="copyToClipboard('whatsapp-post')">Copiar</button>
+      </div>
+
+      <div class="platform">
+        <h3>💬 Telegram</h3>
+        <pre id="telegram-post"></pre>
+        <button class="copy-btn" onclick="copyToClipboard('telegram-post')">Copiar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function generatePost() {
+      const link = document.getElementById("link").value.trim();
+      if (!link) {
+        alert("Por favor, insira um link válido.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`https://script.google.com/macros/s/10TS46Vgui9UsZmmr7diaI8xfn8H4Ha62_jwskJQ-9tFIoNOBE7tFwca4/exec?link=${encodeURIComponent(link)}`);
+        const data = await response.json();
+
+        if (data.success) {
+          document.getElementById("result").style.display = "block";
+          document.getElementById("product-image").src = data.image || "https://via.placeholder.com/300x400";
+          document.getElementById("product-image").style.display = "block";
+
+          document.getElementById("instagram-post").textContent = data.instagram;
+          document.getElementById("whatsapp-post").textContent = data.whatsapp;
+          document.getElementById("telegram-post").textContent = data.telegram;
+        } else {
+          alert("Erro ao processar o link. Verifique se é válido.");
+        }
+      } catch (error) {
+        console.error("Erro:", error);
+        alert("Erro ao conectar ao servidor. Tente novamente.");
+      }
+    }
+
+    function copyToClipboard(elementId) {
+      const element = document.getElementById(elementId);
+      navigator.clipboard.writeText(element.textContent).then(() => {
+        alert("Texto copiado!");
+      });
+    }
+  </script>
+</body>
+</html>
